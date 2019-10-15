@@ -20,6 +20,18 @@ module DefaultForm::ModelHelper
     h
   end
 
+  def enum_options_for_select(enum_name)
+    enum_name = enum_name.to_s
+    h = I18n.t enum_key(enum_name), default: nil
+
+    if h
+      h.stringify_keys.invert
+    else
+      enum_definition = defined_enums[enum_name.to_s]
+      enum_definition.each_with_object({}) { |(label, _value), h| h[label.humanize] = label }
+    end
+  end
+
   def help_i18n(attribute)
     return nil if attribute.blank?
     help_key = DefaultForm.config.help_key.call(self, attribute)
