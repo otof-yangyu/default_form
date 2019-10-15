@@ -32,11 +32,11 @@ module DefaultForm::Builder::Helper
   def label(method, text = nil, options = {}, &block)
     settings = extract_settings(options)
     options[:class] = settings.dig(:css, :label) unless options.key?(:class)
-    
+
     if text.nil? && object.is_a?(ActiveRecord::Base)
       text = object.class.human_attribute_name(method)
     end
-    
+
     super
   end
 
@@ -90,12 +90,15 @@ module DefaultForm::Builder::Helper
 
   def select(method, choices = nil, options = {}, html_options = {}, &block)
     settings = extract_settings(options)
-    options[:selected] ||= default_value(method)
-    html_options[:class] = if html_options[:multiple]
-      settings.dig(:css, :multi_select)
-    else
-      settings.dig(:css, :select)
-    end unless html_options.key?(:class)
+
+    unless html_options.key?(:class)
+      html_options[:class] = if html_options[:multiple]
+                               settings.dig(:css, :multi_select)
+                             else
+                               settings.dig(:css, :select)
+                             end
+    end
+
     options[:include_blank] = I18n.t('helpers.select.prompt') if options[:include_blank] == true
 
     label_content = default_label(method, settings: settings)
